@@ -300,7 +300,16 @@ code { background: var(--surface-2); padding: 0.05rem 0.3rem; border-radius: 4px
 .month-dots i { width: 6px; height: 6px; border-radius: 999px; display: inline-block; }
 .month-selected { margin-top: 0.75rem; border-top: 1px solid var(--border); padding-top: 0.75rem; }
 .month-selected h3 { margin: 0 0 0.4rem; font-size: 0.95rem; }
-.agenda-legend { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.75rem; }
+.agenda-calendars { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.75rem; }
+.agenda-calendars .link { margin: 0 0 0 0.25rem; font-size: 0.8rem; }
+.cal-toggle {
+  display: inline-flex; align-items: center; gap: 0.4rem; font: inherit; font-size: 0.8rem;
+  padding: 0.25rem 0.7rem; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); cursor: pointer;
+}
+.cal-toggle.off { color: var(--text-3); text-decoration: line-through; background: transparent; }
+.cal-toggle.off .dot { opacity: 0.35; }
+@media (hover: hover) { .cal-toggle:hover { background: var(--surface-2); } }
 .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; vertical-align: middle; }
 
 .weekdays { display: flex; gap: 0.35rem; flex-wrap: wrap; }

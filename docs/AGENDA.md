@@ -25,6 +25,10 @@ un événement à la main dans Google sera écrasé à la synchro suivante si le
 le supprimer à la main le fait recréer. Un compteur sur le bouton indique les streaks en
 attente (`needs_sync` : jamais synchronisé, ou modifié depuis).
 
+Sous la grille, un bouton par calendrier permet de le masquer ou de l'afficher. Le filtre
+est fait dans le navigateur (l'API renvoie toujours tout) et le choix est mémorisé sur
+l'appareil (`localStorage`), pas côté serveur.
+
 ## Configuration côté Google (une fois)
 
 1. Ouvrir https://console.cloud.google.com avec ton compte Google **perso** et créer un

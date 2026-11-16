@@ -7,6 +7,9 @@
  *
  * `useSearchParams` lit `?google=connected|refused|bad_state|error`, posé par le backend
  * au retour de Google, pour afficher un message une fois.
+ *
+ * Les calendriers se cochent / décochent sous la grille ; le filtre est côté navigateur
+ * (l'API renvoie tout) et le choix est mémorisé dans `localStorage`, par appareil.
  */
 
 import type { CSSProperties } from "react";
@@ -34,6 +37,26 @@ import { errorMessage } from "../lib/status";
 
 type View = "week" | "month";
 
+const HIDDEN_KEY = "agenda.hiddenCalendars";
+
+/** Lecture tolérante du localStorage : vide en navigation privée ou si le stockage est bloqué. */
+function loadHidden(): Set<string> {
+  try {
+    const raw = window.localStorage.getItem(HIDDEN_KEY);
+    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveHidden(hidden: Set<string>) {
+  try {
+    window.localStorage.setItem(HIDDEN_KEY, JSON.stringify([...hidden]));
+  } catch {
+    /* stockage indisponible : le choix ne survit pas au rechargement, rien de grave */
+  }
+}
+
 const GOOGLE_MESSAGES: Record<string, string> = {
   connected: "Compte Google connecté. Tu peux synchroniser tes streaks.",
   refused: "Connexion refusée côté Google.",
@@ -46,6 +69,15 @@ export function AgendaPage() {
   const [view, setView] = useState<View>("week");
   const [anchor, setAnchor] = useState(todayIso());
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [hidden, setHidden] = useState<Set<string>>(loadHidden);
+
+  function toggleCalendar(id: string) {
+    const next = new Set(hidden);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    saveHidden(next);
+    setHidden(next);
+  }
 
   const status = useGoogleStatus();
   const sync = useSyncAgenda();
@@ -72,6 +104,7 @@ export function AgendaPage() {
   // Index jour → événements, un événement journée-entière multi-jours apparaissant chaque jour.
   const byDay = new Map<string, AgendaEvent[]>();
   for (const event of agenda.data?.events ?? []) {
+    if (hidden.has(event.calendar_id)) continue;
     const first = dayOf(event.start);
     const last = event.all_day ? addDays(event.end, -1) : first;
     for (let day = first; day <= last; day = addDays(day, 1)) {
@@ -209,14 +242,30 @@ export function AgendaPage() {
           )}
 
           {agenda.data && (
-            <p className="muted small agenda-legend">
-              {agenda.data.calendars.map((c) => (
-                <span key={c.id}>
-                  <i className="dot" style={{ background: c.color }} /> {c.name}
-                  {c.is_streak_calendar && " (streaks)"}
-                </span>
-              ))}
-            </p>
+            <div className="agenda-calendars" role="group" aria-label="Calendriers affichés">
+              {agenda.data.calendars.map((c) => {
+                const shown = !hidden.has(c.id);
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className={`cal-toggle ${shown ? "" : "off"}`}
+                    aria-pressed={shown}
+                    onClick={() => toggleCalendar(c.id)}
+                    title={shown ? "Masquer ce calendrier" : "Afficher ce calendrier"}
+                  >
+                    <i className="dot" style={{ background: c.color }} />
+                    {c.name}
+                    {c.is_streak_calendar && " (streaks)"}
+                  </button>
+                );
+              })}
+              {hidden.size > 0 && (
+                <button type="button" className="link" onClick={() => { saveHidden(new Set()); setHidden(new Set()); }}>
+                  tout afficher
+                </button>
+              )}
+            </div>
           )}
         </section>
       )}

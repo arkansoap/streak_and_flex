@@ -1,0 +1,37 @@
+[project]
+name = "streak-backend"
+version = "0.1.0"
+description = "Streak & Flex — API Django (suivi de streaks et de projets persos)"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.2,<6",
+    "django-ninja>=1.4",
+    "psycopg[binary]>=3.2",
+    "dj-database-url>=2.3",
+    "python-dotenv>=1.1",
+    "gunicorn>=23",
+    "whitenoise>=6.9",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-django>=4.9",
+    "ruff>=0.9",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["tests.py", "test_*.py"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "DJ"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["ninja.Query"]

@@ -1,0 +1,47 @@
+# Stack de production : tout en conteneurs, un seul port exposé (WEB_PORT, défaut 8020).
+# Mettre un reverse proxy TLS devant (voir docs/DEPLOY.md).
+#   docker compose -f docker-compose.prod.yml up -d --build
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: streak
+      POSTGRES_USER: streak
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?définir POSTGRES_PASSWORD dans .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U streak -d streak"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://streak:${POSTGRES_PASSWORD}@db:5432/streak
+      DJANGO_DEBUG: "0"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request;urllib.request.urlopen('http://localhost:8000/api/health')\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  web:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8020}:80"
+    volumes:
+      - ./docker/htpasswd:/etc/nginx/htpasswd:ro
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

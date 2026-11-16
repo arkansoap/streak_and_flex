@@ -1,0 +1,25 @@
+# Stack de développement : seule la base tourne en Docker.
+# Le backend (uv run manage.py runserver) et le frontend (npm run dev) tournent
+# en natif pour un rechargement instantané. Ports hôte décalés pour cohabiter
+# avec les autres projets de la machine (Postgres local 5432, docker-rmr 5433,
+# nexus 5442).
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: streak-db
+    environment:
+      POSTGRES_DB: streak
+      POSTGRES_USER: streak
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-streak}
+    ports:
+      - "${POSTGRES_PORT:-5444}:5432"
+    volumes:
+      - streak_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U streak -d streak"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  streak_pgdata:

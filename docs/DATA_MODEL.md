@@ -13,6 +13,12 @@
 | `required_count` | smallint (1–7) | Check-ins nécessaires par période (utile en hebdo : « 2 fois par semaine ») |
 | `full_label`, `simplified_label`, `minimum_label` | varchar(120) | Libellés des niveaux 3, 2, 1 |
 | `start_date` | date | Premier jour compté |
+| `schedule_weekdays` | json (liste d'entiers) | Jours planifiés, 0 = lundi … 6 = dimanche (hebdo) |
+| `schedule_time` | time nullable | Heure du créneau ; vide = journée entière |
+| `schedule_duration` | smallint | Durée du créneau en minutes |
+| `reminder_minutes` | smallint | Rappel Google, minutes avant |
+| `google_event_id` | varchar | Événement récurrent Google lié (vide = jamais synchronisé) |
+| `google_synced_at` | timestamp nullable | Dernière synchro réussie ; `updated_at` plus récent ⇒ `needs_sync` |
 | `archived_at` | timestamp nullable | Archivé = caché de la liste, historique conservé |
 | `created_at`, `updated_at` | timestamp | |
 
@@ -28,6 +34,11 @@
 
 Un seul check-in par jour : recocher un jour remplace le niveau. Les niveaux sont des
 entiers ordonnés pour pouvoir prendre le « meilleur niveau » d'une période (`max`).
+
+### `agenda_googleaccount`
+
+Un seul enregistrement : e-mail, `refresh_token`, `access_token` + expiration, `calendar_id`
+du calendrier dédié, `last_sync_at`, `last_sync_summary` (json). Voir docs/AGENDA.md.
 
 ## Périodes
 

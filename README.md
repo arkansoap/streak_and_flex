@@ -15,6 +15,13 @@ pas casser la chaîne les jours difficiles :
 Les trois niveaux gardent le streak en vie ; le niveau sert à rester honnête et à voir,
 dans le temps, à quel point on tient le vrai objectif.
 
+## Agenda Google
+
+Chaque streak peut avoir un planning (jour(s) et/ou heure). La page **Agenda** affiche tout
+ton Google Agenda en semaine ou en mois, et le bouton **Synchroniser** pousse les créneaux
+dans un calendrier dédié `flex_and_streak`, avec un rappel. La validation reste dans l'app.
+Configuration côté Google : [docs/AGENDA.md](docs/AGENDA.md).
+
 ## Stack
 
 - **Backend** : Django 5.2 + django-ninja (API REST typée, doc OpenAPI sur `/api/docs`), Python 3.12 géré par `uv`.
@@ -42,11 +49,11 @@ conventions : [docs/DEV.md](docs/DEV.md).
 | [docs/DEV.md](docs/DEV.md) | Installation, commandes, structure, conventions, mémo Vue → React |
 | [docs/DATA_MODEL.md](docs/DATA_MODEL.md) | Modèles et règles de calcul du streak |
 | [docs/API.md](docs/API.md) | Contrat de l'API `/api/streaks` |
+| [docs/AGENDA.md](docs/AGENDA.md) | Google Agenda : fonctionnement, configuration OAuth |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | Mise en prod, mises à jour, sauvegardes |
 
 ## Suite envisagée
 
 - Page **Flex** : journal des réussites / projets à montrer.
-- Rappels (mail ou notification) quand une période est en danger.
 - Jours de repos planifiés et « gel » de streak.
 - Authentification applicative si l'outil s'ouvre à plus d'une personne (aujourd'hui : mot de passe nginx en prod).

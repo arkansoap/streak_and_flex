@@ -20,6 +20,21 @@ Erreurs : `400 {"detail": "message"}` (règle métier ou validation), `404 {"det
 | PUT | `/streaks/{id}/checkins/{YYYY-MM-DD}` | `{"level": 1\|2\|3, "note": ""}` | `CheckInOut` | Coche ou remplace le niveau du jour |
 | DELETE | `/streaks/{id}/checkins/{YYYY-MM-DD}` | | `204` / `404` | Décoche |
 
+## Google et agenda
+
+| Méthode | Route | Corps | Réponse | Rôle |
+|---|---|---|---|---|
+| GET | `/google/status` | | `GoogleStatusOut` | `configured` (clés présentes), `connected`, e-mail, dernière synchro, `pending_sync` |
+| GET | `/google/connect` | | `{"url"}` | URL d'autorisation Google (pose un `state` en session) ; 400 si non configuré |
+| GET | `/google/callback?code&state` | | redirection | Retour de Google → `APP_URL/agenda?google=connected\|refused\|bad_state\|error` |
+| POST | `/google/disconnect` | | `204` | Oublie le compte et les identifiants d'événements |
+| POST | `/agenda/sync?force=false` | | `SyncOut` | Pousse les plannings : `created`, `updated`, `deleted`, `unchanged`, `errors[]`. `force` réécrit tout |
+| GET | `/agenda/events?start&end` | | `AgendaOut` | Événements de tous les calendriers visibles entre `start` (inclus) et `end` (exclu, 62 jours max) |
+
+`StreakIn` / `StreakOut` portent aussi le planning : `schedule_weekdays` (0 = lundi … 6 = dimanche),
+`schedule_time` (`"HH:MM:SS"` ou null), `schedule_duration`, `reminder_minutes`, et en sortie
+`has_schedule`, `needs_sync`, `google_event_id`, `google_synced_at`. Voir docs/AGENDA.md.
+
 ## Schémas
 
 `StreakIn`

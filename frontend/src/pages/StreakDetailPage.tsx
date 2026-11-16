@@ -12,7 +12,7 @@ import { Heatmap } from "../components/Heatmap";
 import { LevelPicker } from "../components/LevelPicker";
 import { StatTile } from "../components/StatTile";
 import { useCheckIns, useDeleteStreak, useHistory, useSetCheckIn, useStreak, useUpdateStreak } from "../hooks/useStreaks";
-import { addDays, formatLong, formatShort, mondayOf, todayIso } from "../lib/dates";
+import { addDays, describeSchedule, formatLong, formatShort, mondayOf, todayIso } from "../lib/dates";
 import { LEVELS } from "../lib/levels";
 import { errorMessage, statusOf, unit } from "../lib/status";
 
@@ -67,6 +67,17 @@ export function StreakDetailPage() {
             {formatShort(streak.start_date)}
             {streak.archived && " · archivé"}
           </p>
+          {streak.has_schedule && (
+            <p className="muted small">
+              📅 {describeSchedule(streak.period, streak.schedule_weekdays, streak.schedule_time)}
+              {" · "}
+              {streak.needs_sync ? (
+                <Link to="/agenda" className="link-inline">à synchroniser avec l'agenda</Link>
+              ) : (
+                "dans l'agenda"
+              )}
+            </p>
+          )}
           {streak.description && <p className="description">{streak.description}</p>}
         </div>
         <div className="actions">

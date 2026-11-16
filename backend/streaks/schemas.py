@@ -5,9 +5,10 @@ Convention : `XxxIn` = corps attendu, `XxxOut` = réponse. Les stats sont inclus
 `StreakOut` pour que la page liste n'ait qu'un appel à faire.
 """
 
-from datetime import date, datetime
+from datetime import date, datetime, time
 
 from ninja import Field, Schema
+from pydantic import field_validator
 
 from .models import Level, Period
 
@@ -25,6 +26,18 @@ class StreakIn(Schema):
     simplified_label: str = Field(..., min_length=1, max_length=120)
     minimum_label: str = Field(..., min_length=1, max_length=120)
     start_date: date | None = None
+    schedule_weekdays: list[int] = []
+    schedule_time: time | None = None
+    schedule_duration: int = Field(30, ge=5, le=720)
+    reminder_minutes: int = Field(10, ge=0, le=1440)
+
+    @field_validator("schedule_weekdays")
+    @classmethod
+    def weekdays_valid(cls, days: list[int]) -> list[int]:
+        """Jours uniques, triés, entre 0 (lundi) et 6 (dimanche)."""
+        if any(d < 0 or d > 6 for d in days):
+            raise ValueError("Les jours vont de 0 (lundi) à 6 (dimanche).")
+        return sorted(set(days))
 
 
 class StreakPatch(Schema):
@@ -40,7 +53,20 @@ class StreakPatch(Schema):
     simplified_label: str | None = Field(None, min_length=1, max_length=120)
     minimum_label: str | None = Field(None, min_length=1, max_length=120)
     start_date: date | None = None
+    schedule_weekdays: list[int] | None = None
+    schedule_time: time | None = None
+    schedule_duration: int | None = Field(None, ge=5, le=720)
+    reminder_minutes: int | None = Field(None, ge=0, le=1440)
     archived: bool | None = None
+
+    @field_validator("schedule_weekdays")
+    @classmethod
+    def weekdays_valid(cls, days: list[int] | None) -> list[int] | None:
+        if days is None:
+            return None
+        if any(d < 0 or d > 6 for d in days):
+            raise ValueError("Les jours vont de 0 (lundi) à 6 (dimanche).")
+        return sorted(set(days))
 
 
 class PeriodOut(Schema):
@@ -80,6 +106,14 @@ class StreakOut(Schema):
     simplified_label: str
     minimum_label: str
     start_date: date
+    schedule_weekdays: list[int]
+    schedule_time: time | None
+    schedule_duration: int
+    reminder_minutes: int
+    has_schedule: bool
+    google_event_id: str
+    google_synced_at: datetime | None
+    needs_sync: bool
     archived: bool
     created_at: datetime
     stats: StatsOut

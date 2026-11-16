@@ -58,6 +58,30 @@ class Streak(models.Model):
     start_date = models.DateField(
         help_text="Premier jour compté. Les périodes avant sont ignorées."
     )
+    schedule_weekdays = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="Jours planifiés (0 = lundi … 6 = dimanche). Vide en quotidien = tous les jours.",
+    )
+    schedule_time = models.TimeField(
+        null=True,
+        blank=True,
+        help_text="Heure du créneau. Vide = événement sur la journée entière.",
+    )
+    schedule_duration = models.PositiveSmallIntegerField(
+        default=30, help_text="Durée du créneau en minutes (ignorée sans heure)."
+    )
+    reminder_minutes = models.PositiveSmallIntegerField(
+        default=10, help_text="Rappel Google Agenda, en minutes avant le créneau."
+    )
+    google_event_id = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Identifiant de l'événement récurrent Google (vide = jamais synchronisé).",
+    )
+    google_synced_at = models.DateTimeField(
+        null=True, blank=True, help_text="Dernière synchronisation réussie vers Google Agenda."
+    )
     archived_at = models.DateTimeField(
         null=True, blank=True, help_text="Renseigné quand le streak est mis de côté (non supprimé)."
     )
@@ -73,6 +97,22 @@ class Streak(models.Model):
     @property
     def archived(self) -> bool:
         return self.archived_at is not None
+
+    @property
+    def has_schedule(self) -> bool:
+        """Vrai s'il y a de quoi faire un événement : une heure (quotidien) ou des jours (hebdo)."""
+        if self.period == Period.DAY:
+            return self.schedule_time is not None
+        return bool(self.schedule_weekdays)
+
+    @property
+    def needs_sync(self) -> bool:
+        """Vrai si Google n'a pas (ou plus) la dernière version du planning."""
+        if self.archived or not self.has_schedule:
+            return bool(self.google_event_id)
+        return not self.google_event_id or (
+            self.google_synced_at is not None and self.updated_at > self.google_synced_at
+        )
 
     def label_for(self, level: int) -> str:
         """Libellé configuré par l'utilisateur pour un niveau donné."""

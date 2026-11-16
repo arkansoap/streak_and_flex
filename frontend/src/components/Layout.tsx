@@ -10,6 +10,7 @@ import { NavLink, Outlet } from "react-router-dom";
 
 const LINKS = [
   { to: "/", label: "Streaks", end: true, icon: "M4 19h16M4 14l4-4 4 3 8-8" },
+  { to: "/agenda", label: "Agenda", end: false, icon: "M4 6h16v14H4zM4 10h16M8 3v4M16 3v4" },
   { to: "/archives", label: "Archivés", end: false, icon: "M4 7h16v3H4zM5 10v9h14v-9M10 14h4" },
   { to: "/streaks/new", label: "Nouveau", end: false, icon: "M12 5v14M5 12h14", primary: true },
 ];
@@ -27,7 +28,10 @@ export function Layout() {
               <svg className="nav-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
                 <path d={icon} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span>{primary ? "+ Nouveau" : label}</span>
+              <span>
+                {primary && <span className="nav-plus">+ </span>}
+                {label}
+              </span>
             </NavLink>
           ))}
         </nav>

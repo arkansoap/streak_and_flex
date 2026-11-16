@@ -16,7 +16,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import type { Period, StreakInput } from "../api/types";
 import { useCreateStreak, useStreak, useUpdateStreak } from "../hooks/useStreaks";
-import { todayIso } from "../lib/dates";
+import { WEEKDAY_LETTER, WEEKDAY_SHORT, describeSchedule, todayIso } from "../lib/dates";
 import { errorMessage } from "../lib/status";
 
 const EMPTY: StreakInput = {
@@ -30,6 +30,10 @@ const EMPTY: StreakInput = {
   simplified_label: "",
   minimum_label: "",
   start_date: todayIso(),
+  schedule_weekdays: [],
+  schedule_time: null,
+  schedule_duration: 30,
+  reminder_minutes: 10,
 };
 
 export function StreakFormPage() {
@@ -55,6 +59,15 @@ function StreakForm({ id, initial }: { id: number | null; initial: StreakInput }
   function set<K extends keyof StreakInput>(key: K, value: StreakInput[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
+
+  function toggleDay(day: number) {
+    const days = form.schedule_weekdays.includes(day)
+      ? form.schedule_weekdays.filter((d) => d !== day)
+      : [...form.schedule_weekdays, day].sort();
+    set("schedule_weekdays", days);
+  }
+
+  const schedule = describeSchedule(form.period, form.schedule_weekdays, form.schedule_time);
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -129,6 +142,53 @@ function StreakForm({ id, initial }: { id: number | null; initial: StreakInput }
           1 · Objectif minimum
           <input className="input" required maxLength={120} value={form.minimum_label} onChange={(e) => set("minimum_label", e.target.value)} placeholder="15 min à la maison (renfo ou étirements)" />
         </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Planning dans l'agenda</legend>
+        <p className="muted small">
+          Facultatif. Le créneau est poussé dans ton Google Agenda (calendrier dédié) au prochain « Synchroniser » sur la
+          page Agenda, avec un rappel. La validation se fait toujours ici, dans l'app.
+        </p>
+        {form.period === "week" && (
+          <div className="field">
+            Jours
+            <div className="weekdays" role="group" aria-label="Jours planifiés">
+              {WEEKDAY_LETTER.map((letter, day) => (
+                <button
+                  key={day}
+                  type="button"
+                  className={`weekday ${form.schedule_weekdays.includes(day) ? "selected" : ""}`}
+                  aria-pressed={form.schedule_weekdays.includes(day)}
+                  aria-label={WEEKDAY_SHORT[day]}
+                  onClick={() => toggleDay(day)}
+                >
+                  {letter}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        <div className="row">
+          <label className="field">
+            {form.period === "day" ? "Heure (tous les jours)" : "Heure (vide = journée entière)"}
+            <input
+              type="time"
+              className="input"
+              value={form.schedule_time ? form.schedule_time.slice(0, 5) : ""}
+              onChange={(e) => set("schedule_time", e.target.value ? `${e.target.value}:00` : null)}
+            />
+          </label>
+          <label className="field">
+            Durée (min)
+            <input type="number" className="input" min={5} max={720} step={5} value={form.schedule_duration} onChange={(e) => set("schedule_duration", Number(e.target.value))} disabled={!form.schedule_time} />
+          </label>
+          <label className="field">
+            Rappel (min avant)
+            <input type="number" className="input" min={0} max={1440} step={5} value={form.reminder_minutes} onChange={(e) => set("reminder_minutes", Number(e.target.value))} />
+          </label>
+        </div>
+        <p className="muted small">{schedule ? `Dans l'agenda : ${schedule}.` : "Aucun créneau ne sera créé."}</p>
       </fieldset>
 
       {mutation.isError && <p className="error">{errorMessage(mutation.error)}</p>}

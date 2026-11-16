@@ -55,6 +55,7 @@ npx tsc -b                         # type-check seul
 streak_and_flex/
 ├── backend/
 │   ├── config/            # settings, urls, api.py (NinjaAPI racine)
+│   ├── agenda/            # Google Agenda : google.py (client REST), services.py (sync), api.py
 │   ├── streaks/           # l'app métier
 │   │   ├── models.py      # Streak, CheckIn, enums Period / Level
 │   │   ├── services.py    # règles du streak (fonctions pures) — le cœur
@@ -66,11 +67,11 @@ streak_and_flex/
 │   └── pyproject.toml
 ├── frontend/
 │   ├── src/
-│   │   ├── api/           # types.ts (miroir des schémas), client.ts (fetch), streaks.ts (routes)
-│   │   ├── hooks/         # useStreaks.ts : React Query (cache serveur)
+│   │   ├── api/           # types.ts (miroir des schémas), client.ts (fetch), streaks.ts, agenda.ts
+│   │   ├── hooks/         # useStreaks.ts, useAgenda.ts : React Query (cache serveur)
 │   │   ├── lib/           # dates, niveaux, statut : fonctions pures
 │   │   ├── components/    # StreakCard, LevelPicker, Heatmap, StatTile, Layout
-│   │   ├── pages/         # StreaksPage, StreakDetailPage, StreakFormPage
+│   │   ├── pages/         # StreaksPage, StreakDetailPage, StreakFormPage, AgendaPage
 │   │   ├── App.tsx        # routes
 │   │   ├── main.tsx       # providers
 │   │   └── styles.css     # tokens CSS, mode sombre automatique

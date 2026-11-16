@@ -3,6 +3,7 @@
 import { Route, Routes } from "react-router-dom";
 
 import { Layout } from "./components/Layout";
+import { AgendaPage } from "./pages/AgendaPage";
 import { StreakDetailPage } from "./pages/StreakDetailPage";
 import { StreakFormPage } from "./pages/StreakFormPage";
 import { StreaksPage } from "./pages/StreaksPage";
@@ -12,6 +13,7 @@ export function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<StreaksPage />} />
+        <Route path="agenda" element={<AgendaPage />} />
         <Route path="archives" element={<StreaksPage archived />} />
         <Route path="streaks/new" element={<StreakFormPage />} />
         <Route path="streaks/:id" element={<StreakDetailPage />} />

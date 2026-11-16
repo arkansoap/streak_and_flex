@@ -20,6 +20,9 @@ Compléter :
 DJANGO_ALLOWED_HOSTS=streak.mondomaine.fr
 DJANGO_CSRF_TRUSTED_ORIGINS=https://streak.mondomaine.fr
 WEB_PORT=8020
+APP_URL=https://streak.mondomaine.fr
+GOOGLE_CLIENT_ID=...        # facultatif, voir docs/AGENDA.md
+GOOGLE_CLIENT_SECRET=...
 ```
 
 Relancer `scripts/deploy.sh` : il demande un identifiant et un mot de passe pour l'accès web

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "ninja",
     "streaks",
+    "agenda",
 ]
 
 MIDDLEWARE = [
@@ -108,3 +109,9 @@ if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+
+APP_URL = os.environ.get("APP_URL", "http://localhost:5180").rstrip("/")
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
+GOOGLE_REDIRECT_URI = os.environ.get("GOOGLE_REDIRECT_URI", f"{APP_URL}/api/google/callback")
+GOOGLE_CALENDAR_NAME = os.environ.get("GOOGLE_CALENDAR_NAME", "flex_and_streak")

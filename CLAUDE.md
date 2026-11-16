@@ -34,7 +34,11 @@ si uv se plaint d'un venv étranger.
 - Langue de l'interface, des docs et des messages d'erreur : français.
 - `erasableSyntaxOnly` dans tsconfig : pas d'`enum` TS, utiliser `as const`.
 
+- Google Agenda (`backend/agenda/`) : sens unique app → calendrier dédié, synchro manuelle, la
+  validation ne passe jamais par Google (décision du 16/11, Google Tasks écarté). Client REST
+  maison dans `agenda/google.py`, testé avec `httpx.MockTransport` ; pas de SDK Google.
+
 ## Docs
 
 `docs/DEV.md` (installation, structure, mémo Vue → React), `docs/DATA_MODEL.md` (règles du
-streak), `docs/API.md`, `docs/DEPLOY.md` (scripts/deploy.sh, Caddy, sauvegardes).
+streak), `docs/API.md`, `docs/AGENDA.md` (Google), `docs/DEPLOY.md` (scripts/deploy.sh, Caddy, sauvegardes).

@@ -9,6 +9,7 @@ from django.http import HttpRequest
 from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
 
+from agenda.api import agenda_router, google_router
 from streaks.api import router as streaks_router
 from streaks.services import StreakError
 
@@ -19,6 +20,8 @@ api = NinjaAPI(
 )
 
 api.add_router("/streaks", streaks_router, tags=["streaks"])
+api.add_router("/google", google_router, tags=["google"])
+api.add_router("/agenda", agenda_router, tags=["agenda"])
 
 
 @api.exception_handler(StreakError)

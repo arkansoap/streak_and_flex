@@ -97,6 +97,32 @@ streak_and_flex/
   (toujours un texte à côté).
 - Tests : chaque règle de `services.py` a un test dans `streaks/tests/test_services.py`.
 
+## Responsive : ordinateur, tablette, téléphone
+
+L'interface est pensée pour les trois supports, dans `frontend/src/styles.css` uniquement
+(les composants ne changent pas selon l'écran, hors le défilement de la heatmap).
+
+| Plage | Ce qui change |
+|---|---|
+| Téléphone (< 640 px) | navigation en barre d'onglets fixée en bas (icône + libellé, zone sûre iOS via `env(safe-area-inset-bottom)`) ; sur le détail, le panneau « cocher aujourd'hui » passe avant les stats (`order: -1`) ; actions du détail sur toute la largeur ; titres réduits |
+| Tablette (640–1023 px) | barre en haut, cartes et stats sur 2 colonnes |
+| Ordinateur (≥ 1024 px) | 3 colonnes de cartes, 4 tuiles de stats, heatmap à 16 px |
+| Tactile (`pointer: coarse`) | cibles d'au moins 44 px, champs à 16 px (sinon iOS zoome au focus), cases de heatmap à 20 px, survols désactivés (`@media (hover: hover)`) |
+
+Règles à garder :
+
+- Pas d'information portée uniquement par un survol (`title`) : sur tactile il n'existe pas. La
+  heatmap, par exemple, affiche la date et le niveau dans le panneau après un tap.
+- Les grilles sont fluides (`auto-fill` / `flex-wrap`) ; les points de rupture n'ajustent que
+  la navigation, l'ordre et les densités.
+- La heatmap défile horizontalement et se positionne sur les semaines récentes au montage
+  (`useRef` + `useEffect` dans `Heatmap.tsx`).
+- `public/manifest.webmanifest` + icônes : l'app s'ajoute à l'écran d'accueil (Android, iOS)
+  et s'ouvre en plein écran. Pas de service worker (pas de mode hors ligne) pour l'instant.
+
+Pour vérifier : outils de développement du navigateur en mode appareil (iPhone, iPad), ou le
+script Playwright de capture décrit dans la session de création (390 / 820 / 1280 px).
+
 ## Mémo Vue → React (pour ce projet)
 
 | Vue | Ici | Où le voir |

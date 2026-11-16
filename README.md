@@ -21,6 +21,7 @@ dans le temps, à quel point on tient le vrai objectif.
 - **Frontend** : React 19 + TypeScript, Vite, React Router, TanStack Query.
 - **Base** : PostgreSQL 16 (Docker).
 - **Prod** : Docker Compose (Postgres, gunicorn, nginx), un script `scripts/deploy.sh`.
+- **Supports** : ordinateur, tablette, téléphone (navigation en bas sur mobile, installable sur l'écran d'accueil).
 
 ## Démarrer en local
 

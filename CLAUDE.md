@@ -28,6 +28,9 @@ si uv se plaint d'un venv étranger.
 - Dates ISO locales (`lib/dates.ts`, `timezone.localdate()`), semaine = lundi → dimanche.
 - Couleur = identité du streak ; niveaux = même teinte clair → foncé ; jamais une couleur seule
   sans texte. Mode sombre automatique via tokens CSS.
+- **Multi-support obligatoire** : toute vue doit marcher sur téléphone, tablette et ordinateur
+  (points de rupture 640 / 1024 px, `pointer: coarse` pour le tactile, nav en bas sur téléphone).
+  Vérifier aux trois largeurs (390 / 820 / 1280) avant de livrer. Détails : docs/DEV.md.
 - Langue de l'interface, des docs et des messages d'erreur : français.
 - `erasableSyntaxOnly` dans tsconfig : pas d'`enum` TS, utiliser `as const`.
 

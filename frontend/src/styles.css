@@ -73,9 +73,28 @@ ul.plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.35rem;
 .brand { font-weight: 700; font-size: 1.1rem; white-space: nowrap; }
 .brand span { color: var(--accent); }
 .topbar nav { display: flex; gap: 0.25rem; align-items: center; }
-.topbar nav a { padding: 0.4rem 0.7rem; border-radius: 8px; color: var(--text-2); }
-.topbar nav a.active { color: var(--text); background: var(--surface-2); }
-.container { max-width: 1000px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+.nav-link { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.7rem; border-radius: 8px; color: var(--text-2); white-space: nowrap; }
+.nav-link.active { color: var(--text); background: var(--surface-2); }
+.nav-icon { display: none; }
+.nav-primary, .nav-primary.active { background: var(--accent); color: #fff; }
+.container { max-width: 1100px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+
+/* Téléphone : la navigation passe en barre d'onglets fixée en bas, icône + libellé. */
+@media (max-width: 639px) {
+  .topbar { padding: 0.6rem 1rem; }
+  .topbar nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 3;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 0.3rem 0.5rem calc(0.3rem + env(safe-area-inset-bottom));
+  }
+  .nav-link { flex-direction: column; gap: 2px; font-size: 0.7rem; padding: 0.35rem 0.25rem; border-radius: 10px; justify-content: center; }
+  .nav-icon { display: block; }
+  .nav-primary, .nav-primary.active { background: none; color: var(--accent); }
+  .nav-primary .nav-icon { background: var(--accent); color: #fff; border-radius: 999px; padding: 2px; }
+  .container { padding: 1rem 1rem calc(5rem + env(safe-area-inset-bottom)); }
+  h1 { font-size: 1.35rem; }
+}
 
 /* --- Boutons et champs ---------------------------------------------------- */
 .btn {
@@ -84,9 +103,9 @@ ul.plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.35rem;
   padding: 0.45rem 0.85rem; border-radius: 8px; border: 1px solid var(--border);
   background: var(--surface); color: var(--text); font: inherit; cursor: pointer;
 }
-.btn:hover { background: var(--surface-2); }
+@media (hover: hover) { .btn:hover { background: var(--surface-2); } }
 .btn-primary, .topbar nav a.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn-primary:hover { filter: brightness(1.1); background: var(--accent); }
+@media (hover: hover) { .btn-primary:hover { filter: brightness(1.1); background: var(--accent); } }
 .btn-danger { color: var(--danger); }
 .btn:disabled { opacity: 0.6; cursor: wait; }
 .link { background: none; border: none; color: var(--accent); cursor: pointer; font: inherit; padding: 0; margin-top: 0.5rem; }
@@ -125,7 +144,7 @@ input[type="color"].input { padding: 0.15rem; height: 2.45rem; width: 3.5rem; }
   padding: 0.5rem 0.65rem; border-radius: 8px; border: 1px solid var(--border);
   background: var(--surface); color: var(--text); font: inherit; cursor: pointer;
 }
-.level:hover { background: var(--surface-2); }
+@media (hover: hover) { .level:hover { background: var(--surface-2); } }
 .level:disabled { opacity: 0.6; cursor: wait; }
 .level-dot { width: 14px; height: 14px; border-radius: 4px; flex: none; background: var(--surface-2); border: 1px solid var(--border); }
 .level-3 .level-dot { background: var(--c); }
@@ -140,6 +159,11 @@ input[type="color"].input { padding: 0.15rem; height: 2.45rem; width: 3.5rem; }
 
 /* --- Détail --------------------------------------------------------------- */
 .detail { display: grid; gap: 1rem; }
+@media (max-width: 639px) {
+  .detail-today { order: -1; }
+  .detail-head .actions { width: 100%; }
+  .detail-head .actions .btn { flex: 1; justify-content: center; }
+}
 .detail-head { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: flex-start; }
 .detail-head h1 { margin-bottom: 0.1rem; }
 .description { white-space: pre-wrap; margin-top: 0.5rem; }
@@ -160,12 +184,13 @@ input[type="color"].input { padding: 0.15rem; height: 2.45rem; width: 3.5rem; }
 .periods li.current { outline: 1px dashed var(--border); }
 
 /* --- Heatmap -------------------------------------------------------------- */
-.heatmap { display: grid; grid-template-columns: auto 1fr; gap: 0.35rem; overflow-x: auto; }
-.heatmap-days { display: grid; grid-template-rows: repeat(7, 14px); gap: 3px; font-size: 0.65rem; color: var(--text-3); line-height: 14px; padding-right: 2px; }
-.heatmap-grid { display: flex; gap: 3px; }
-.heatmap-col { display: grid; grid-template-rows: repeat(7, 14px); gap: 3px; }
+.heatmap { --cell: 14px; --gap: 3px; display: grid; gap: 0.35rem; }
+.heatmap-scroll { display: grid; grid-template-columns: auto 1fr; gap: 0.35rem; overflow-x: auto; padding: 3px; scrollbar-width: thin; }
+.heatmap-days { display: grid; grid-template-rows: repeat(7, var(--cell)); gap: var(--gap); font-size: 0.65rem; color: var(--text-3); line-height: var(--cell); padding-right: 2px; }
+.heatmap-grid { display: flex; gap: var(--gap); }
+.heatmap-col { display: grid; grid-template-rows: repeat(7, var(--cell)); gap: var(--gap); }
 .cell {
-  width: 14px; height: 14px; border-radius: 3px; padding: 0; border: 1px solid transparent;
+  width: var(--cell); height: var(--cell); border-radius: 3px; padding: 0; border: 1px solid transparent;
   background: var(--surface-2); cursor: pointer; display: inline-block;
 }
 .cell-1 { background: color-mix(in oklab, var(--c) 32%, var(--surface)); }
@@ -175,8 +200,9 @@ input[type="color"].input { padding: 0.15rem; height: 2.45rem; width: 3.5rem; }
 .cell-before { opacity: 0.45; }
 .cell-today { outline: 2px solid var(--text); outline-offset: 1px; }
 .cell-selected { outline: 2px solid var(--accent); outline-offset: 1px; }
-button.cell:hover:not(:disabled) { filter: brightness(1.1); border-color: var(--text-3); }
-.heatmap-legend { grid-column: 1 / -1; display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.78rem; color: var(--text-2); margin-top: 0.25rem; }
+@media (hover: hover) { button.cell:hover:not(:disabled) { filter: brightness(1.1); border-color: var(--text-3); } }
+@media (min-width: 1024px) { .heatmap { --cell: 16px; } }
+.heatmap-legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.78rem; color: var(--text-2); margin-top: 0.25rem; }
 .heatmap-legend span { display: inline-flex; align-items: center; gap: 0.3rem; }
 .heatmap-legend .cell { cursor: default; }
 
@@ -192,3 +218,28 @@ button.cell:hover:not(:disabled) { filter: brightness(1.1); border-color: var(--
 /* --- État vide ------------------------------------------------------------ */
 .empty { text-align: center; padding: 3rem 1rem; display: grid; gap: 0.75rem; justify-items: center; color: var(--text-2); }
 .empty h2 { color: var(--text); justify-content: center; }
+
+/* --- Tactile ---------------------------------------------------------------
+ * `pointer: coarse` = doigt (téléphone, tablette). Cibles d'au moins 44 px, champs à
+ * 16 px pour qu'iOS ne zoome pas au focus, cases de heatmap plus grandes.
+ */
+@media (pointer: coarse) {
+  .btn, .level, .nav-link { min-height: 44px; }
+  .input, select.input { min-height: 44px; font-size: 16px; }
+  .heatmap { --cell: 20px; --gap: 4px; }
+  .cell-today, .cell-selected { outline-width: 2px; }
+  .periods li { padding: 0.45rem 0.6rem; }
+}
+
+/* --- Tablette (640–1023 px) -------------------------------------------------- */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .cards { grid-template-columns: repeat(2, 1fr); }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* --- Grand écran ------------------------------------------------------------ */
+@media (min-width: 1024px) {
+  .cards { grid-template-columns: repeat(3, 1fr); }
+  .stats { grid-template-columns: repeat(4, 1fr); }
+  .container { padding-top: 2rem; }
+}

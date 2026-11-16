@@ -4,9 +4,14 @@
  * Couleur = échelle séquentielle à une teinte (celle du streak) : plus le niveau est
  * haut, plus la case est foncée. Une légende textuelle accompagne toujours la grille.
  * Cliquer une case passée la sélectionne pour la cocher/décocher dans le parent.
+ *
+ * Sur écran étroit la grille déborde : elle défile horizontalement et se positionne
+ * d'emblée sur les semaines les plus récentes (à droite), les seules qui comptent au
+ * quotidien. `useRef` donne accès à l'élément DOM, `useEffect` agit après le rendu.
  */
 
 import type { CSSProperties } from "react";
+import { useEffect, useRef } from "react";
 
 import type { Level } from "../api/types";
 import { addDays, formatLong, isToday, mondayOf, todayIso } from "../lib/dates";
@@ -25,6 +30,12 @@ interface Props {
 const DAY_NAMES = ["L", "M", "M", "J", "V", "S", "D"];
 
 export function Heatmap({ color, levels, weeks = 16, startDate, selected, onSelect, labels }: Props) {
+  const scroller = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = scroller.current;
+    if (el) el.scrollLeft = el.scrollWidth;
+  }, [weeks]);
+
   const today = todayIso();
   const firstMonday = addDays(mondayOf(today), -7 * (weeks - 1));
 
@@ -35,6 +46,7 @@ export function Heatmap({ color, levels, weeks = 16, startDate, selected, onSele
 
   return (
     <div className="heatmap" style={{ "--c": color } as CSSProperties}>
+      <div className="heatmap-scroll" ref={scroller}>
       <div className="heatmap-days" aria-hidden="true">
         {DAY_NAMES.map((name, i) => (
           <span key={i}>{name}</span>
@@ -72,6 +84,7 @@ export function Heatmap({ color, levels, weeks = 16, startDate, selected, onSele
             })}
           </div>
         ))}
+      </div>
       </div>
       <div className="heatmap-legend">
         <span>

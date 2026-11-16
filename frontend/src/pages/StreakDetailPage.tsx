@@ -82,14 +82,14 @@ export function StreakDetailPage() {
         </div>
       </header>
 
-      <section className="stats">
+      <section className="stats detail-stats">
         <StatTile label={`streak en cours (${unit(streak, 2)})`} value={stats.current_streak} hint={label} />
         <StatTile label="record" value={stats.best_streak} />
         <StatTile label="réussite" value={rate} hint={`${stats.periods_validated}/${stats.periods_done} périodes terminées`} />
         <StatTile label="check-ins" value={stats.total_checkins} />
       </section>
 
-      <section className="panel">
+      <section className="panel detail-today">
         <h2>
           {formatLong(day)} <span className={`badge badge-${selectedDay ? "neutral" : tone}`}>{selectedDay ? "jour sélectionné" : label}</span>
         </h2>

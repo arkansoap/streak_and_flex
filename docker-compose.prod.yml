@@ -37,7 +37,9 @@ services:
     build: ./frontend
     restart: unless-stopped
     ports:
-      - "${WEB_PORT:-8020}:80"
+      # 127.0.0.1 : joignable seulement par le reverse proxy de la machine. Sans cela
+      # Docker publie le port sur Internet en contournant ufw.
+      - "127.0.0.1:${WEB_PORT:-8020}:80"
     volumes:
       - ./docker/htpasswd:/etc/nginx/htpasswd:ro
     depends_on:

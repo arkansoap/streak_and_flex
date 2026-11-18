@@ -34,7 +34,9 @@ if [[ ! -f docker/htpasswd ]]; then
   read -rsp "Mot de passe : " pass; echo
   mkdir -p docker
   printf '%s:%s\n' "$user" "$(openssl passwd -apr1 "$pass")" > docker/htpasswd
-  chmod 600 docker/htpasswd
+  # 644 : le nginx du conteneur tourne sous un autre utilisateur et doit pouvoir lire
+  # le fichier (il ne contient qu'un mot de passe haché).
+  chmod 644 docker/htpasswd
   log "docker/htpasswd créé pour '$user'"
 fi
 

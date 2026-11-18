@@ -34,7 +34,9 @@ def env_list(name: str, default: str = "") -> list[str]:
     return [item.strip() for item in os.environ.get(name, default).split(",") if item.strip()]
 
 
-ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
+# localhost reste toujours accepté : les contrôles de santé (healthcheck du conteneur,
+# scripts/deploy.sh) appellent l'API sans passer par le nom de domaine public.
+ALLOWED_HOSTS = sorted({*env_list("DJANGO_ALLOWED_HOSTS"), "localhost", "127.0.0.1"})
 CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS")
 
 INSTALLED_APPS = [
